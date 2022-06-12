@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=4L
+Exec=launch.sh
+Comment=Write LightScribe CD/DVD labels
+Type=Application
+Icon=uk.lukeross.flatpak.lightscribe
+Categories=DiscBurning;

@@ -1,0 +1,60 @@
+app-id: uk.lukeross.flatpak.lightscribe
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+command: launch.sh
+add-extensions:
+  org.freedesktop.Platform.Compat.i386:
+    directory: lib/i386-linux-gnu
+    version: '21.08'
+sdk-extensions:
+  - org.freedesktop.Sdk.Compat.i386
+finish-args:
+  - --allow=multiarch
+  - --socket=x11
+  - --device=all
+  - --filesystem=xdg-documents:ro
+  - --filesystem=xdg-pictures:ro
+  - --filesystem=xdg-templates:ro
+modules:
+  - name: 4L
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/lib/i386-linux-gnu
+      - install -D launch.sh /app/bin/launch.sh
+      - install -D bin/4L-cli /app/bin/4L-cli
+      - install -D bin/4L-gui /app/bin/4L-gui
+      - install -D lib/lightscribe/elcu.sh /app/bin/elcu.sh
+      - install -D lacie_website.sh /app/bin/lacie_website.sh
+      - install -D share/doc/lightscribeLicense.rtf /app/share/doc/lightscribeLicense.rtf
+      - install -D 4L/doc/4L_User_Manual.pdf /app/share/doc/4L_User_Manual.pdf
+      - install -D lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
+      - install -D lib/lightscribe/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
+      - install -D lightscribe.rc /app/etc/lightscribe.rc
+      - install -D lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/share/icons/hicolor/32x32/uk.lukeross.flatpak.lightscribe.png
+      - install -D uk.lukeross.flatpak.lightscribe.desktop /app/share/applications/uk.lukeross.flatpak.lightscribe.desktop
+      - cp -pr 4L/templates /app/share/doc
+      - ln -s liblightscribe.so.1 /app/lib/liblightscribe.so
+      - ln -s libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
+      - sed -i 's/rcpath=\/etc\/lightscribe.rc/rcpath=\/var\/config\/lightscribe.rc/' /app/bin/elcu.sh
+    sources:
+      - type: dir
+        path: usr
+      - type: dir
+        path: etc
+      - type: script
+        dest-filename: launch.sh
+        commands:
+          - cd /app/bin
+          - cp -n /app/etc/lightscribe.rc /var/config/
+          - cp -nr /app/share/doc/templates /var/data/
+          - export LIGHTSCRIBERC=/var/config/lightscribe.rc
+          - exec "${@:-4L-gui}"
+      - type: script
+        dest-filename: lacie_website.sh
+        commands:
+          - exec /usr/bin/xdg-open http://www.lacie.com/lightscribe/
+      - type: file
+        path: uk.lukeross.flatpak.lightscribe.desktop
+      - type: dir
+        path: opt
