@@ -29,6 +29,7 @@ flatpak build-bundle export uk.lukeross.flatpak.lightscribe.flatpak uk.lukeross.
 
 ```
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user org.freedesktop.Platform.Compat.i386//21.08
 flatpak install --user uk.lukeross.flatpak.lightscribe.flatpak
 ```
 
