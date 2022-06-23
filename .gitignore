@@ -1,7 +1,5 @@
 /build
-/etc
 /export
-/opt
 /uk.lukeross.flatpak.lightscribe.flatpak
-/usr
 /.flatpak-builder
+/*.rpm

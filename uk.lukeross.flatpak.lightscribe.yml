@@ -16,39 +16,50 @@ finish-args:
   - --filesystem=xdg-documents:ro
   - --filesystem=xdg-pictures:ro
   - --filesystem=xdg-templates:ro
+  - --env=LIGHTSCRIBERC=/var/config/lightscribe.rc
 modules:
   - name: 4L
     buildsystem: simple
     build-commands:
       - mkdir -p /app/lib/i386-linux-gnu
       - install -D launch.sh /app/bin/launch.sh
-      - install -D bin/4L-cli /app/bin/4L-cli
-      - install -D bin/4L-gui /app/bin/4L-gui
-      - install -D lib/lightscribe/elcu.sh /app/bin/elcu.sh
-      - install -D lacie_website.sh /app/bin/lacie_website.sh
-      - install -D share/doc/lightscribeLicense.rtf /app/share/doc/lightscribeLicense.rtf
-      - install -D 4L/doc/4L_User_Manual.pdf /app/share/doc/4L_User_Manual.pdf
-      - install -D lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
-      - install -D lib/lightscribe/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
-      - install -D lightscribe.rc /app/etc/lightscribe.rc
-      - install -D lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/share/icons/hicolor/32x32/uk.lukeross.flatpak.lightscribe.png
+      - install -D 4l/4L/4L-cli /app/bin/4L-cli
+      - install -D 4l/4L/4L-gui /app/bin/4L-gui
+      - install -D lightscribe/lib/lightscribe/elcu.sh /app/bin/elcu.sh
+      - install -D lacie_website.sh /app/4L/lacie_website.sh
+      - install -D lightscribe/share/doc/lightscribeLicense.rtf /app/share/doc/lightscribeLicense.rtf
+      - install -D 4l/4L/doc/4L_User_Manual.pdf /app/share/doc/4L_User_Manual.pdf
+      - install -D lightscribe/lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
+      - install -D lightscribe/lib/lightscribe/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
+      - install -D lightscribe/lightscribe.rc /app/etc/lightscribe.rc
+      - install -D lightscribeapps/lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/share/icons/hicolor/32x32/apps/uk.lukeross.flatpak.lightscribe.png
       - install -D uk.lukeross.flatpak.lightscribe.desktop /app/share/applications/uk.lukeross.flatpak.lightscribe.desktop
-      - cp -pr 4L/templates /app/share/doc
+      - cp -pr 4l/4L/templates /app/share/doc
+      - cp -pr 4l/4L/translations /app/4L
+      - cp -pr lightscribeapps/lightscribeApplications/SimpleLabeler/content/images/borders/fullsize /app/share/doc/borders
       - ln -s liblightscribe.so.1 /app/lib/liblightscribe.so
       - ln -s libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
-      - sed -i 's/rcpath=\/etc\/lightscribe.rc/rcpath=\/var\/config\/lightscribe.rc/' /app/bin/elcu.sh
+      - perl -C0 -pi -e 's#rcpath=/etc/lightscribe.rc#rcpath=/var/config/lightscribe.rc#;' /app/bin/elcu.sh
+      - perl -C0 -pi -e 's#/usr/4L/translations/4L-gui_#/app/4L/translations/4L-gui_#;' /app/bin/4L-gui
+      - perl -C0 -pi -e 's#/usr/4L/lacie_website.sh#/app/4L/lacie_website.sh#;' /app/bin/4L-gui
     sources:
-      - type: dir
-        path: usr
-      - type: dir
-        path: etc
+      - type: archive
+        archive-type: rpm
+        path: lightscribe-1.18.27.10-linux-2.6-intel.rpm
+        dest: lightscribe
+      - type: archive
+        archive-type: rpm
+        path: lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
+        dest: lightscribeapps
+      - type: archive
+        archive-type: rpm
+        path: 4L-1.0-r6.i586.rpm
+        dest: 4l
       - type: script
         dest-filename: launch.sh
         commands:
-          - cd /app/bin
           - cp -n /app/etc/lightscribe.rc /var/config/
-          - cp -nr /app/share/doc/templates /var/data/
-          - export LIGHTSCRIBERC=/var/config/lightscribe.rc
+          - cp -nr /app/share/doc/* /var/data/
           - exec "${@:-4L-gui}"
       - type: script
         dest-filename: lacie_website.sh
@@ -56,5 +67,3 @@ modules:
           - exec /usr/bin/xdg-open http://www.lacie.com/lightscribe/
       - type: file
         path: uk.lukeross.flatpak.lightscribe.desktop
-      - type: dir
-        path: opt
