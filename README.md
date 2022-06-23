@@ -4,9 +4,9 @@
 
 ### Copy the LightScribe RPMs into the working directory
 
-- 4L-1.0-r6.i586.rpm
-- lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
-- lightscribe-1.18.27.10-linux-2.6-intel.rpm
+- `4L-1.0-r6.i586.rpm`
+- `lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm`
+- `lightscribe-1.18.27.10-linux-2.6-intel.rpm`
 
 ### Install the build environment
 
