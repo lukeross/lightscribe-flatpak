@@ -4,4 +4,5 @@ Exec=launch.sh
 Comment=Write LightScribe CD/DVD labels
 Type=Application
 Icon=uk.lukeross.flatpak.lightscribe
-Categories=DiscBurning;
+Categories=DiscBurning;Graphics;
+Terminal=false
