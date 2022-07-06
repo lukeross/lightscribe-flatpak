@@ -2,7 +2,7 @@ app-id: uk.lukeross.flatpak.lightscribe
 runtime: org.freedesktop.Platform
 runtime-version: '21.08'
 sdk: org.freedesktop.Sdk
-command: /app/bin/4L-cli
+command: launch.sh
 add-extensions:
   org.freedesktop.Platform.Compat.i386:
     directory: lib/i386-linux-gnu
@@ -22,6 +22,7 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/lib/i386-linux-gnu
+      - install -D launch.sh /app/bin/launch.sh
       - install -D apply_extra /app/bin/apply_extra
       - install -D rpm2cpio/rpm2cpio.py /app/bin/rpm2cpio
       - install -D lacie_website.sh /app/4L/lacie_website.sh
@@ -35,14 +36,17 @@ modules:
         dest: rpm2cpio
       - type: extra-data
         url: http://web.archive.org/web/20200404105932/http://www.pawtec.com/lightscribe_files/Linux/LSS/lightscribe-1.18.27.10-linux-2.6-intel.rpm
+        filename: lightscribe-1.18.27.10-linux-2.6-intel.rpm
         size: 825987
         sha256: 069703c3b5a572191f53697fcccb83504bb1c2405382d02d952fe5d4f12f2643
       - type: extra-data
         url: http://web.archive.org/web/20140331144236if_/http://www.pawtec.com/lightscribe_files/Linux/LSL/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
+        filename: lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
         size: 9756232
         sha256: 2e8cf6887974ac1bd4ee8d415a4160a75b39d31d33394eb7284d7179862fa504
       - type: extra-data
         url: http://www.yardbird.net/lightscribe/4L/4L-1.0-r6.i586.rpm
+        filename: 4L-1.0-r6.i586.rpm
         size: 3603229
         sha256: 7d6a04ed0ca5d129d992160ede24d59f992293f5cb003578e719a52a92530724
       - type: script
@@ -51,6 +55,12 @@ modules:
           - exec /usr/bin/xdg-open http://www.lacie.com/lightscribe/
       - type: file
         path: uk.lukeross.flatpak.lightscribe.desktop
+      - type: script
+        dest-filename: launch.sh
+        commands:
+          - cp -n /app/etc/lightscribe.rc /var/config/
+          - cp -nr /app/share/doc/* /var/data/
+          - exec "${@:-4L-gui}"
       - type: script
         dest-filename: apply_extra
         commands:
@@ -72,6 +82,5 @@ modules:
           - ln -s liblightscribe.so.1 /app/lib/liblightscribe.so
           - ln -s libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
           - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"rcpath=/etc/lightscribe.rc", b"rcpath=/var/config/lightscribe.rc"))' < /tmp/usr/lib/lightscribe/elcu.sh > /app/bin/elcu.sh
-          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"/usr/4L/translations/4L-gui_", b"/app/4L/translations/4L-gui_"))' < /tmp/usr/4l/4L/4L-gui > /app/bin/4L-gui
           - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"/usr/4L/translations/4L-gui_", b"/app/4L/translations/4L-gui_").replace(b"/usr/4L/lacie_website.sh", b"/app/4L/lacie_website.sh"))' < /tmp/usr/4l/4L/4L-gui > /app/bin/4L-gui
           - chmod 0755 /app/bin/elcu.sh /app/bin/4L-gui

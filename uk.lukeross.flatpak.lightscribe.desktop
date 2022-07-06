@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=4L
-Exec=/app/bin/4L-gui
+Exec=launch.sh
 Comment=Write LightScribe CD/DVD labels
 Type=Application
 Icon=uk.lukeross.flatpak.lightscribe

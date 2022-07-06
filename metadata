@@ -2,3 +2,14 @@
 name=uk.lukeross.flatpak.lightscribe
 runtime=org.freedesktop.Platform/x86_64/21.08
 sdk=org.freedesktop.Sdk/x86_64/21.08
+
+[Extra Data]
+uri0=http://web.archive.org/web/20200404105932/http://www.pawtec.com/lightscribe_files/Linux/LSS/lightscribe-1.18.27.10-linux-2.6-intel.rpm
+size0=825987
+checksum0=069703c3b5a572191f53697fcccb83504bb1c2405382d02d952fe5d4f12f2643
+uri1=http://web.archive.org/web/20140331144236if_/http://www.pawtec.com/lightscribe_files/Linux/LSL/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
+size1=9756232
+checksum1=2e8cf6887974ac1bd4ee8d415a4160a75b39d31d33394eb7284d7179862fa504
+uri2=http://www.yardbird.net/lightscribe/4L/4L-1.0-r6.i586.rpm
+size2=3603229
+checksum2=7d6a04ed0ca5d129d992160ede24d59f992293f5cb003578e719a52a92530724
