@@ -2,11 +2,8 @@
 
 ## Building
 
-### Copy the LightScribe RPMs into the working directory
-
-- `4L-1.0-r6.i586.rpm`
-- `lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm`
-- `lightscribe-1.18.27.10-linux-2.6-intel.rpm`
+This version uses `extra-data` to fetch the (proprietary-licensed) RPMs as
+install-time, so the RPMs do not need to be fetched prior to building.
 
 ### Install the build environment
 
@@ -17,26 +14,16 @@ flatpak install --user org.freedesktop.Platform//21.08 org.freedesktop.Platform.
 
 ### Build
 
-To build to a bundle:
+To build and install in one operation:
 
 ```
-flatpak run org.flatpak.Builder --force-clean build uk.lukeross.flatpak.lightscribe.yml
-flatpak build-export export build
-flatpak build-bundle export uk.lukeross.flatpak.lightscribe.flatpak uk.lukeross.flatpak.lightscribe
+flatpak-builder --user --install --force-clean build uk.lukeross.flatpak.lightscribe.yml
 ```
 
-To build and push to a repository:
+To build and push to a repository called `repo`:
 
 ```
 flatpak-builder --gpg-sign=keyid --repo=repo --force-clean build uk.lukeross.flatpak.lightscribe.yml
-```
-
-## Installing from a bundle
-
-```
-flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install --user org.freedesktop.Platform.Compat.i386//21.08
-flatpak install --user uk.lukeross.flatpak.lightscribe.flatpak
 ```
 
 ## Running
