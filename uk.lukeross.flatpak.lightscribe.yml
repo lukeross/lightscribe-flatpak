@@ -2,7 +2,7 @@ app-id: uk.lukeross.flatpak.lightscribe
 runtime: org.freedesktop.Platform
 runtime-version: '21.08'
 sdk: org.freedesktop.Sdk
-command: launch.sh
+command: /app/bin/4L-cli
 add-extensions:
   org.freedesktop.Platform.Compat.i386:
     directory: lib/i386-linux-gnu
@@ -22,48 +22,56 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/lib/i386-linux-gnu
-      - install -D launch.sh /app/bin/launch.sh
-      - install -D 4l/4L/4L-cli /app/bin/4L-cli
-      - install -D 4l/4L/4L-gui /app/bin/4L-gui
-      - install -D lightscribe/lib/lightscribe/elcu.sh /app/bin/elcu.sh
+      - install -D apply_extra /app/bin/apply_extra
+      - install -D rpm2cpio/rpm2cpio.py /app/bin/rpm2cpio
       - install -D lacie_website.sh /app/4L/lacie_website.sh
-      - install -D lightscribe/share/doc/lightscribeLicense.rtf /app/share/doc/lightscribeLicense.rtf
-      - install -D 4l/4L/doc/4L_User_Manual.pdf /app/share/doc/4L_User_Manual.pdf
-      - install -D lightscribe/lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
-      - install -D lightscribe/lib/lightscribe/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
-      - install -D lightscribe/lightscribe.rc /app/etc/lightscribe.rc
-      - install -D lightscribeapps/lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/share/icons/hicolor/32x32/apps/uk.lukeross.flatpak.lightscribe.png
       - install -D uk.lukeross.flatpak.lightscribe.desktop /app/share/applications/uk.lukeross.flatpak.lightscribe.desktop
-      - cp -pr 4l/4L/templates /app/share/doc
-      - cp -pr 4l/4L/translations /app/4L
-      - cp -pr lightscribeapps/lightscribeApplications/SimpleLabeler/content/images/borders/fullsize /app/share/doc/borders
-      - ln -s liblightscribe.so.1 /app/lib/liblightscribe.so
-      - ln -s libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
-      - perl -C0 -pi -e 's#rcpath=/etc/lightscribe.rc#rcpath=/var/config/lightscribe.rc#;' /app/bin/elcu.sh
-      - perl -C0 -pi -e 's#/usr/4L/translations/4L-gui_#/app/4L/translations/4L-gui_#;' /app/bin/4L-gui
-      - perl -C0 -pi -e 's#/usr/4L/lacie_website.sh#/app/4L/lacie_website.sh#;' /app/bin/4L-gui
+      - chmod 0755 /app/bin/rpm2cpio
     sources:
-      - type: archive
-        archive-type: rpm
-        path: lightscribe-1.18.27.10-linux-2.6-intel.rpm
-        dest: lightscribe
-      - type: archive
-        archive-type: rpm
-        path: lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
-        dest: lightscribeapps
-      - type: archive
-        archive-type: rpm
-        path: 4L-1.0-r6.i586.rpm
-        dest: 4l
-      - type: script
-        dest-filename: launch.sh
-        commands:
-          - cp -n /app/etc/lightscribe.rc /var/config/
-          - cp -nr /app/share/doc/* /var/data/
-          - exec "${@:-4L-gui}"
+      - type: git
+        url: https://github.com/ruda/rpm2cpio.git
+        branch: master
+        commit: 5afad4b65e4661a771db6f728abefe2c1e84b9ae
+        dest: rpm2cpio
+      - type: extra-data
+        url: http://web.archive.org/web/20200404105932/http://www.pawtec.com/lightscribe_files/Linux/LSS/lightscribe-1.18.27.10-linux-2.6-intel.rpm
+        size: 825987
+        sha256: 069703c3b5a572191f53697fcccb83504bb1c2405382d02d952fe5d4f12f2643
+      - type: extra-data
+        url: http://web.archive.org/web/20140331144236if_/http://www.pawtec.com/lightscribe_files/Linux/LSL/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm
+        size: 9756232
+        sha256: 2e8cf6887974ac1bd4ee8d415a4160a75b39d31d33394eb7284d7179862fa504
+      - type: extra-data
+        url: http://www.yardbird.net/lightscribe/4L/4L-1.0-r6.i586.rpm
+        size: 3603229
+        sha256: 7d6a04ed0ca5d129d992160ede24d59f992293f5cb003578e719a52a92530724
       - type: script
         dest-filename: lacie_website.sh
         commands:
           - exec /usr/bin/xdg-open http://www.lacie.com/lightscribe/
       - type: file
         path: uk.lukeross.flatpak.lightscribe.desktop
+      - type: script
+        dest-filename: apply_extra
+        commands:
+          - cd /tmp
+          - rpm2cpio < /app/extra/lightscribe-1.18.27.10-linux-2.6-intel.rpm | cpio -i --make-directories
+          - rpm2cpio < /app/extra/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm | cpio -i --make-directories
+          - rpm2cpio < /app/extra/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm | cpio -i --make-directories
+          - install -D /tmp/usr/4l/4L/4L-cli /app/bin/4L-cli
+          - install -D /tmp/usr/lib/lightscribe/elcu.sh /app/bin/elcu.sh
+          - install -D /tmp/usr/share/doc/lightscribeLicense.rtf /var/data/lightscribeLicense.rtf
+          - install -D /tmp/usr/4L/doc/4L_User_Manual.pdf /var/data/4L_User_Manual.pdf
+          - install -D /tmp/usr/lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
+          - install -D /tmp/usr/lib/lightscribe/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
+          - install -D /tmp/usr/lightscribe.rc /var/config/lightscribe.rc
+          - install -D /tmp/opt/lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/extra/export/share/icons/hicolor/32x32/apps/uk.lukeross.flatpak.lightscribe.png
+          - cp -pr /tmp/usr/4L/templates /var/data/
+          - cp -pr /tmp/usr/4L/translations /app/4L
+          - cp -pr /tmp/opt/lightscribeApplications/SimpleLabeler/content/images/borders/fullsize /var/data/borders
+          - ln -s liblightscribe.so.1 /app/lib/liblightscribe.so
+          - ln -s libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
+          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"rcpath=/etc/lightscribe.rc", b"rcpath=/var/config/lightscribe.rc"))' < /tmp/usr/lib/lightscribe/elcu.sh > /app/bin/elcu.sh
+          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"/usr/4L/translations/4L-gui_", b"/app/4L/translations/4L-gui_"))' < /tmp/usr/4l/4L/4L-gui > /app/bin/4L-gui
+          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"/usr/4L/translations/4L-gui_", b"/app/4L/translations/4L-gui_").replace(b"/usr/4L/lacie_website.sh", b"/app/4L/lacie_website.sh"))' < /tmp/usr/4l/4L/4L-gui > /app/bin/4L-gui
+          - chmod 0755 /app/bin/elcu.sh /app/bin/4L-gui
