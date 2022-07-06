@@ -22,20 +22,29 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/lib/i386-linux-gnu
+      - install -D /usr/bin/cpio /app/bin/cpio
       - install -D launch.sh /app/bin/launch.sh
       - install -D apply_extra /app/bin/apply_extra
       - install -D rpm2cpio/rpm2cpio.py /app/bin/rpm2cpio
-      - install -D lacie_website.sh /app/4L/lacie_website.sh
+      - install -D lacie_website.sh /app/bin/lacie_website.sh
       - install -D uk.lukeross.flatpak.lightscribe.desktop /app/share/applications/uk.lukeross.flatpak.lightscribe.desktop
+      - ln -s ../extra/lib/liblightscribe.so.1 /app/lib/liblightscribe.so
+      - ln -s ../extra/lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
+      - ln -s ../extra/lib/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
+      - ln -s ../extra/lib/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
+      - ln -s ../extra/bin/4L-gui /app/bin/4L-gui
+      - ln -s ../extra/bin/4L-cli /app/bin/4L-cli
+      - ln -s ../extra/bin/elcu.sh /app/bin/elcu.sh
+      - ln -s ../extra/4L /app/4L
       - chmod 0755 /app/bin/rpm2cpio
     sources:
       - type: git
-        url: https://github.com/ruda/rpm2cpio.git
+        url: https://github.com/JorySchossau/rpm2cpio.git
         branch: master
-        commit: 5afad4b65e4661a771db6f728abefe2c1e84b9ae
+        commit: 0a9db84001b16ea9b735df1e89a8b91df2e4325f
         dest: rpm2cpio
       - type: extra-data
-        url: http://web.archive.org/web/20200404105932/http://www.pawtec.com/lightscribe_files/Linux/LSS/lightscribe-1.18.27.10-linux-2.6-intel.rpm
+        url: http://web.archive.org/web/20200404105932if_/http://www.pawtec.com/lightscribe_files/Linux/LSS/lightscribe-1.18.27.10-linux-2.6-intel.rpm
         filename: lightscribe-1.18.27.10-linux-2.6-intel.rpm
         size: 825987
         sha256: 069703c3b5a572191f53697fcccb83504bb1c2405382d02d952fe5d4f12f2643
@@ -58,8 +67,8 @@ modules:
       - type: script
         dest-filename: launch.sh
         commands:
-          - cp -n /app/etc/lightscribe.rc /var/config/
-          - cp -nr /app/share/doc/* /var/data/
+          - cp -n /app/extra/etc/lightscribe.rc /var/config/
+          - cp -nr /app/extra/doc/* /var/data/
           - exec "${@:-4L-gui}"
       - type: script
         dest-filename: apply_extra
@@ -67,20 +76,20 @@ modules:
           - cd /tmp
           - rpm2cpio < /app/extra/lightscribe-1.18.27.10-linux-2.6-intel.rpm | cpio -i --make-directories
           - rpm2cpio < /app/extra/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm | cpio -i --make-directories
-          - rpm2cpio < /app/extra/lightscribeApplications-1.18.15.1-linux-2.6-intel.rpm | cpio -i --make-directories
-          - install -D /tmp/usr/4l/4L/4L-cli /app/bin/4L-cli
-          - install -D /tmp/usr/lib/lightscribe/elcu.sh /app/bin/elcu.sh
-          - install -D /tmp/usr/share/doc/lightscribeLicense.rtf /var/data/lightscribeLicense.rtf
-          - install -D /tmp/usr/4L/doc/4L_User_Manual.pdf /var/data/4L_User_Manual.pdf
-          - install -D /tmp/usr/lib/liblightscribe.so.1 /app/lib/liblightscribe.so.1
-          - install -D /tmp/usr/lib/lightscribe/libstdc++.so.5.0.7 /app/lib/libstdc++.so.5.0.7
-          - install -D /tmp/usr/lightscribe.rc /var/config/lightscribe.rc
+          - rpm2cpio < /app/extra/4L-1.0-r6.i586.rpm | cpio -i --make-directories
+          - mkdir /app/extra/4L
+          - install -D /tmp/usr/4L/4L-cli /app/extra/bin/4L-cli
+          - install -D /tmp/usr/share/doc/lightscribeLicense.rtf /app/extra/doc/lightscribeLicense.rtf
+          - install -D /tmp/usr/4L/doc/4L_User_Manual.pdf /app/extra/doc/4L_User_Manual.pdf
+          - install -D /tmp/usr/lib/liblightscribe.so.1 /app/extra/lib/liblightscribe.so.1
+          - install -D /tmp/usr/lib/lightscribe/libstdc++.so.5.0.7 /app/extra/lib/libstdc++.so.5.0.7
+          - install -D /tmp/etc/lightscribe.rc /app/extra/etc/lightscribe.rc
           - install -D /tmp/opt/lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/extra/export/share/icons/hicolor/32x32/apps/uk.lukeross.flatpak.lightscribe.png
-          - cp -pr /tmp/usr/4L/templates /var/data/
-          - cp -pr /tmp/usr/4L/translations /app/4L
-          - cp -pr /tmp/opt/lightscribeApplications/SimpleLabeler/content/images/borders/fullsize /var/data/borders
-          - ln -s liblightscribe.so.1 /app/lib/liblightscribe.so
-          - ln -s libstdc++.so.5.0.7 /app/lib/libstdc++.so.5
-          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"rcpath=/etc/lightscribe.rc", b"rcpath=/var/config/lightscribe.rc"))' < /tmp/usr/lib/lightscribe/elcu.sh > /app/bin/elcu.sh
-          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"/usr/4L/translations/4L-gui_", b"/app/4L/translations/4L-gui_").replace(b"/usr/4L/lacie_website.sh", b"/app/4L/lacie_website.sh"))' < /tmp/usr/4l/4L/4L-gui > /app/bin/4L-gui
-          - chmod 0755 /app/bin/elcu.sh /app/bin/4L-gui
+          - install -D /tmp/opt/lightscribeApplications/SimpleLabeler/content/images/LabelWizardIcon.png /app/extra/export/share/icons/hicolor/32x32/apps/uk.lukeross.flatpak.lightscribe.png
+          - install -D /app/bin/lacie_website.sh /app/extra/4L/lacie_websute.sh
+          - cp -pr /tmp/usr/4L/templates /app/extra/doc/
+          - cp -pr /tmp/usr/4L/translations /app/extra/4L/
+          - cp -pr /tmp/opt/lightscribeApplications/SimpleLabeler/content/images/borders/fullsize /app/extra/doc/borders
+          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"rcpath=/etc/lightscribe.rc", b"rcpath=/var/config/lightscribe.rc"))' < /tmp/usr/lib/lightscribe/elcu.sh > /app/extra/bin/elcu.sh
+          - python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"/usr/4L/translations/4L-gui_", b"/app/4L/translations/4L-gui_").replace(b"/usr/4L/lacie_website.sh", b"/app/4L/lacie_website.sh"))' < /tmp/usr/4L/4L-gui > /app/extra/bin/4L-gui
+          - chmod 0755 /app/extra/bin/elcu.sh /app/extra/bin/4L-gui
