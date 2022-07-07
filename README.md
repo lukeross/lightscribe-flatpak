@@ -17,7 +17,7 @@ flatpak install --user org.freedesktop.Platform//21.08 org.freedesktop.Platform.
 To build and install in one operation:
 
 ```
-flatpak-builder --user --install --force-clean build uk.lukeross.flatpak.lightscribe.yml
+flatpak run org.flatpak.Builder --user --install --force-clean build uk.lukeross.flatpak.lightscribe.yml
 ```
 
 To build and push to a repository called `repo`:
