@@ -7,24 +7,43 @@ install-time, so the RPMs do not need to be fetched prior to building.
 
 ### Install the build environment
 
-```
+```shell
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install --user org.freedesktop.Platform//21.08 org.freedesktop.Platform.Compat.i386//21.08 org.freedesktop.Sdk//21.08 org.freedesktop.Sdk.Compat.i386//21.08 org.flatpak.Builder
+flatpak install --user org.freedesktop.Platform//23.08 org.freedesktop.Platform.Compat.i386//23.08 org.freedesktop.Sdk//23.08 org.freedesktop.Sdk.Compat.i386//23.08 org.flatpak.Builder
 ```
 
 ### Build
 
 To build and install in one operation:
 
-```
+```shell
 flatpak run org.flatpak.Builder --user --install --force-clean build uk.lukeross.flatpak.lightscribe.yml
 ```
 
 To build and push to a repository called `repo`:
 
+```shell
+flatpak run org.flatpak.Builder --gpg-sign=keyid --repo=repo --force-clean build uk.lukeross.flatpak.lightscribe.yml
 ```
-flatpak-builder --gpg-sign=keyid --repo=repo --force-clean build uk.lukeross.flatpak.lightscribe.yml
+
+Building a bundle does not work as bundles currently cannot reference external data; see
+[this ticket](https://github.com/flatpak/flatpak/issues/1334) for details and to track the problem.
+
+<!--
+To build a bundle:
+
+```shell
+# Build
+flatpak run org.flatpak.Builder --force-clean build uk.lukeross.flatpak.lightscribe.yml
+flatpak build-export export build
+flatpak build-bundle export uk.lukeross.flatpak.lightscribe.flatpak uk.lukeross.flatpak.lightscribe
+
+# Install built bundle
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user org.freedesktop.Platform.Compat.i386//23.08
+flatpak install --user uk.lukeross.flatpak.lightscribe.flatpak
 ```
+-->
 
 ## Running
 
